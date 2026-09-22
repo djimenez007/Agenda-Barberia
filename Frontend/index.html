@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vintage & Blade - Barber Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <span class="logo-icon">✂</span>
+        <span class="logo-text">VINTAGE <span>&</span> BLADE</span>
+      </a>
+
+      <button class="btn-menu" id="btn-menu" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#inicio" class="nav-item">Inicio</a>
+        <a href="#servicios" class="nav-item">Servicios</a>
+        <a href="#barberos" class="nav-item">Barberos</a>
+        <a href="#resenas" class="nav-item">Reseñas</a>
+        
+        <div id="auth-buttons" class="auth-buttons">
+          <button class="btn btn-outline" id="btn-open-login">Iniciar Sesión</button>
+        </div>
+
+        <div id="user-profile-badge" class="user-badge-container hidden">
+          <span class="user-name-display" id="user-display-name">Hola, Cliente</span>
+          <button class="btn btn-sm btn-outline" id="btn-open-my-appointments">Mis Citas</button>
+          <button class="btn btn-sm btn-secondary" id="btn-logout">Salir</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- VISTA PRINCIPAL (LANDING) -->
+  <main id="landing-view">
+    <!-- HERO -->
+    <section id="inicio" class="hero">
+      <div class="hero-content">
+        <span class="badge">Estilo & Tradición</span>
+        <h1 class="hero-title">Elegancia Clásica,<br>Corte Perfecto.</h1>
+        <p class="hero-subtitle">Experimenta el arte de la barbería tradicional con técnicas modernas y una atención personalizada de primer nivel.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" id="btn-hero-booking">Reservar Cita Ahora</button>
+          <a href="#servicios" class="btn btn-outline btn-lg">Ver Servicios</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="servicios" class="section bg-card">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Nuestros Servicios</span>
+          <h2 class="section-title">Especialidades de la Casa</h2>
+        </div>
+        <div class="services-grid" id="landing-services-grid"></div>
+      </div>
+    </section>
+
+    <!-- BARBEROS -->
+    <section id="barberos" class="section">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">El Equipo</span>
+          <h2 class="section-title">Maestros Barberos</h2>
+        </div>
+        <div class="barbers-grid" id="landing-barbers-grid"></div>
+      </div>
+    </section>
+
+    <!-- RESEÑAS -->
+    <section id="resenas" class="section bg-card">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Testimonios</span>
+          <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+        </div>
+        <div class="reviews-grid">
+          <div class="review-card">
+            <p>"El mejor corte y perfilado de barba de la ciudad. La atención es impecable."</p>
+            <strong style="display:block; margin-top:1rem; color:var(--accent);">- Carlos M.</strong>
+          </div>
+          <div class="review-card">
+            <p>"Excelente ambiente y puntualidad con las reservas. 100% recomendado."</p>
+            <strong style="display:block; margin-top:1rem; color:var(--accent);">- Alejandro R.</strong>
+          </div>
+          <div class="review-card">
+            <p>"Ritual de toalla caliente excelente. Marco es un verdadero profesional."</p>
+            <strong style="display:block; margin-top:1rem; color:var(--accent);">- Andrés G.</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- VISTA PROCESO DE RESERVA (WIZARD) -->
+  <section id="booking-view" class="booking-section">
+    <div class="booking-container">
+      
+      <div class="booking-header">
+        <button class="btn btn-outline btn-sm" id="btn-cancel-booking">← Volver al Inicio</button>
+        <h2 class="booking-title">RESERVA DE CITA ONLINE</h2>
+      </div>
+
+      <!-- STEPPER -->
+      <div class="stepper">
+        <div class="step active" data-step="1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Servicio</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Barbero</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Fecha/Hora</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="4">
+          <div class="step-circle">4</div>
+          <span class="step-label">Datos</span>
+        </div>
+      </div>
+
+      <!-- CONTENIDO DE PASOS -->
+      <div class="wizard-card">
+        
+        <!-- PASO 1: SERVICIO -->
+        <div class="step-pane active" id="step-pane-1">
+          <h3 class="pane-title">Selecciona un Servicio</h3>
+          <div class="services-selection-grid" id="booking-services-grid"></div>
+        </div>
+
+        <!-- PASO 2: BARBERO -->
+        <div class="step-pane" id="step-pane-2">
+          <h3 class="pane-title">Selecciona tu Barbero</h3>
+          <div class="barbers-selection-grid" id="booking-barbers-grid"></div>
+        </div>
+
+        <!-- PASO 3: FECHA Y HORA -->
+        <div class="step-pane" id="step-pane-3">
+          <h3 class="pane-title">Fecha y Hora</h3>
+          <div class="datetime-layout">
+            <div class="calendar-box">
+              <div class="calendar-header">
+                <button class="btn-icon" id="cal-prev">‹</button>
+                <span class="cal-title" id="cal-month-year">Mes Año</span>
+                <button class="btn-icon" id="cal-next">›</button>
+              </div>
+              <div class="calendar-weekdays">
+                <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+              </div>
+              <div class="calendar-days" id="calendar-days"></div>
+            </div>
+
+            <div class="slots-box">
+              <div class="slots-header" id="selected-date-label">Selecciona una fecha</div>
+              <div class="slots-grid" id="slots-grid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 4: DATOS DEL CLIENTE -->
+        <div class="step-pane" id="step-pane-4">
+          <h3 class="pane-title">Tus Datos de Contacto</h3>
+          <div class="form-container">
+            <div class="form-group">
+              <label for="user-name">Nombre Completo</label>
+              <input type="text" id="user-name" placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="form-group">
+              <label for="user-phone">Teléfono / WhatsApp</label>
+              <input type="tel" id="user-phone" placeholder="Ej: +506 8888-8888">
+            </div>
+            <div class="form-group">
+              <label for="user-email">Correo Electrónico (Opcional)</label>
+              <input type="email" id="user-email" placeholder="ejemplo@correo.com">
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 5: CONFIRMACIÓN -->
+        <div class="step-pane" id="step-pane-5">
+          <h3 class="pane-title">¡Cita Agendada con Éxito!</h3>
+          <p style="color:var(--text-muted); margin-bottom: 1.5rem;">Hemos registrado tu reserva. Te esperamos en el horario seleccionado.</p>
+          
+          <div class="summary-card" id="summary-card"></div>
+
+          <div class="summary-actions">
+            <button class="btn btn-primary" id="btn-finish-booking">Volver al Inicio</button>
+          </div>
+        </div>
+
+        <!-- FOOTER DEL WIZARD -->
+        <div class="wizard-footer" id="wizard-footer">
+          <button class="btn btn-secondary" id="btn-prev-step" disabled>Anterior</button>
+          <button class="btn btn-primary" id="btn-next-step" disabled>Siguiente</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL DE AUTENTICACIÓN (LOGIN/REGISTRO) -->
+  <div class="modal-backdrop" id="auth-modal">
+    <div class="modal-card small">
+      <div class="modal-header">
+        <h3 id="auth-modal-title">Iniciar Sesión</h3>
+        <button class="btn-close" id="btn-close-auth">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Form Login -->
+        <form id="form-login" class="form-container">
+          <div class="form-group">
+            <label for="login-email">Correo Electrónico</label>
+            <input type="email" id="login-email" required placeholder="correo@ejemplo.com">
+          </div>
+          <div class="form-group">
+            <label for="login-pass">Contraseña</label>
+            <input type="password" id="login-pass" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+          <p class="auth-switch-text">¿No tienes cuenta? <a href="#" id="link-to-register">Regístrate aquí</a></p>
+        </form>
+
+        <!-- Form Registro -->
+        <form id="form-register" class="form-container hidden">
+          <div class="form-group">
+            <label for="reg-name">Nombre Completo</label>
+            <input type="text" id="reg-name" required placeholder="Juan Pérez">
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Teléfono</label>
+            <input type="tel" id="reg-phone" required placeholder="+506 8888-8888">
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Correo Electrónico</label>
+            <input type="email" id="reg-email" required placeholder="correo@ejemplo.com">
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Crear Cuenta</button>
+          <p class="auth-switch-text">¿Ya tienes cuenta? <a href="#" id="link-to-login">Inicia sesión</a></p>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MIS CITAS CLIENTE -->
+  <div class="modal-backdrop" id="appointments-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Mis Citas Registradas</h3>
+        <button class="btn-close" id="btn-close-appointments">✕</button>
+      </div>
+      <div class="modal-body" id="modal-appointments-list">
+        <!-- Generado dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER PRINCIPAL -->
+  <footer class="footer">
+    <p>&copy; 2026 VINTAGE & BLADE Barber Shop. San José, Costa Rica.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

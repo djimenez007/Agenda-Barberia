@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Protección para que buscadores no indexen este panel privado -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Mi Panel | Vintage & Blade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE ACCESO/LOGIN DE EMPLEADOS -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-brand">
+        <span class="logo-icon">✂</span>
+        <h2>VINTAGE & BLADE</h2>
+        <p>Acceso Personal para Barberos</p>
+      </div>
+
+      <form id="form-employee-login" class="login-form">
+        <div class="form-group">
+          <label for="emp-barber-select">Selecciona tu Perfil</label>
+          <select id="emp-barber-select" required>
+            <option value="" disabled selected>Cargando barberos...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="emp-pin">PIN de Acceso</label>
+          <input type="password" id="emp-pin" placeholder="••••" maxlength="4" required autocomplete="current-password">
+          <small class="hint-text">(PIN por defecto de prueba: 1234)</small>
+        </div>
+
+        <div id="login-error" class="login-error hidden">
+          PIN incorrecto. Intenta de nuevo.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Ingresar a Mi Agenda</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- HEADER / NAVBAR PANEL -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <span class="logo-icon">✂</span>
+        <div class="brand-text">
+          <span class="title">VINTAGE & BLADE</span>
+          <span class="subtitle">Panel Individual de Barbero</span>
+        </div>
+      </div>
+
+      <div class="header-user">
+        <div class="user-info">
+          <span class="user-name" id="active-barber-name">Cargando...</span>
+          <span class="user-role" id="active-barber-role">Barbero</span>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-logout">Cerrar Sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL (MAIN) -->
+  <main class="app-main">
+    <div class="main-container">
+
+      <!-- BARRA DE CONTROL & FILTROS -->
+      <section class="controls-card">
+        <div class="controls-grid">
+          <div class="control-item">
+            <label for="filter-date">Fecha de Agenda</label>
+            <input type="date" id="filter-date">
+          </div>
+
+          <div class="control-item">
+            <label for="filter-status">Estado de Citas</label>
+            <select id="filter-status">
+              <option value="ALL">Todos los Estados</option>
+              <option value="Confirmada">Confirmadas</option>
+              <option value="Completada">Completadas</option>
+              <option value="Cancelada">Canceladas</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- TARJETAS DE MÉTRICAS / RESUMEN PERSONAL -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Mis Citas del Día</span>
+          <span class="stat-value" id="stat-total-citas">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pendientes / Confirmadas</span>
+          <span class="stat-value text-accent" id="stat-confirmadas">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Completadas Hoy</span>
+          <span class="stat-value text-success" id="stat-completadas">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Mi Ingreso Generado</span>
+          <span class="stat-value text-gold" id="stat-ingreso">$0</span>
+        </div>
+      </section>
+
+      <!-- TABLA / LISTADO DE CITAS PERSONAL -->
+      <section class="appointments-card">
+        <div class="card-header">
+          <h2 class="card-title">Mi Agenda Personal</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh">🔄 Actualizar Mi Agenda</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="appointments-table">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Contacto</th>
+                <th>Servicio Solicitado</th>
+                <th>Estado</th>
+                <th style="text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="appointments-tbody">
+              <!-- Se rellena dinámicamente solo con citas del barbero activo -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Estado Vacío -->
+        <div id="empty-state" class="empty-state hidden">
+          <p>No tienes citas agendadas para la fecha seleccionada.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER PANEL -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 VINTAGE & BLADE. Sistema de Agenda Individual para Empleados.</p>
+      <small>San José, Costa Rica • Uso exclusivo para personal autorizado</small>
+    </div>
+  </footer>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
