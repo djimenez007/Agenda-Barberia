@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Cita } from '../Entities/cita.entity.js';
+import { Cita } from './cita.entity';
 
 @Entity('barberos')
 export class Barbero {
@@ -9,14 +9,20 @@ export class Barbero {
   @Column()
   nombre: string;
 
+  @Column({ unique: true })
+  usuario: string; // Ej: 'carlos.mendoza'
+
+  @Column({ select: false })
+  password?: string; // El signo ? indica a TS que puede ser undefined // Hash encriptado con bcrypt
+
   @Column()
   especialidad: string;
 
-  @Column({ default: 'Disponible' })
-  estado: string; // Ej: Disponible, En descanso, De vacaciones
+  @Column({ nullable: true })
+  fotoUrl: string;
 
-  @Column({ select: false }) // Oculta el PIN en consultas normales por seguridad
-  pin: string;
+  @Column({ default: 'Disponible' })
+  estado: string;
 
   @OneToMany(() => Cita, (cita) => cita.barbero)
   citas: Cita[];

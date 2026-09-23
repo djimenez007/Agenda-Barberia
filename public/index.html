@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-white dark:bg-neutral-950 font-sans antialiased text-neutral-900 dark:text-neutral-100 scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  
+  <!-- Script anti-parpadeo (Aplica el tema antes de renderizar el HTML) -->
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+  
+  <!-- ==================== META TAGS SEO ==================== -->
+  <title>Barbería & Co. — Gestión y Reserva de Citas</title>
+  <meta name="description" content="Plataforma de reservas de barbería. Agenda tu cita en segundos con un diseño minimalista e intuitivo." />
+  <meta name="keywords" content="barberia, reservas, citas online, corte de pelo, saas barberia" />
+  <meta name="author" content="Barbería & Co." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="http://localhost:3000/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="http://localhost:3000/" />
+  <meta property="og:title" content="Barbería & Co. — Reserva de Turnos" />
+  <meta property="og:description" content="Agenda tu cita en línea. Cortes de autor y cuidado de barba." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop" />
+
+  <!-- Tailwind CSS CDN (con soporte para dark mode por clase) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+
+  <style>
+    /* Estilo de Tipografía Apple Design System (San Francisco Font Stack) */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      letter-spacing: -0.011em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Scrollbar minimalista estilo macOS */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 9999px; }
+    .dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); }
+    .dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+
+    /* Efecto de cristal esmerilado Apple (Backdrop Blur) */
+    .apple-glass {
+      background-color: rgba(255, 255, 255, 0.82);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+    }
+    .dark .apple-glass {
+      background-color: rgba(10, 10, 10, 0.82);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-300">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="sticky top-0 z-50 apple-glass border-b border-neutral-200/80 dark:border-neutral-800 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-12 sm:h-14 flex items-center justify-between">
+      
+      <!-- Logo Minimalista -->
+      <div class="flex items-center space-x-2.5 cursor-pointer select-none" onclick="showSection('landing')">
+        <div class="w-6 h-6 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-semibold text-xs tracking-tighter">
+          B
+        </div>
+        <span class="font-semibold text-sm tracking-tight text-black dark:text-white">
+          Barbería & Co.
+        </span>
+      </div>
+
+      <!-- Links Desktop -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-normal text-neutral-600 dark:text-neutral-400">
+        <button onclick="showSection('landing')" class="hover:text-black dark:hover:text-white transition-colors">Inicio</button>
+        <button onclick="scrollToFeatures()" class="hover:text-black dark:hover:text-white transition-colors">Servicios</button>
+        <button onclick="showSection('reserva')" class="hover:text-black dark:hover:text-white transition-colors">Reservar Turno</button>
+      </nav>
+
+      <!-- Botones Acción Desktop & Toggle Dark Mode -->
+      <div class="hidden sm:flex items-center gap-2.5">
+        
+        <!-- Toggle Modo Oscuro -->
+        <button onclick="toggleDarkMode()" class="p-1.5 rounded-full text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all min-h-[32px] min-w-[32px] flex items-center justify-center" aria-label="Cambiar Tema">
+          <svg id="theme-toggle-dark-icon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+          <svg id="theme-toggle-light-icon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        </button>
+
+        <button onclick="showSection('admin')" class="px-3 py-1.5 rounded-full text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all min-h-[32px]">
+          Ingreso Equipo
+        </button>
+        <button onclick="showSection('reserva')" class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-95 transition-all min-h-[32px]">
+          Reservar Cita
+        </button>
+      </div>
+
+      <!-- Botones Móvil -->
+      <div class="flex items-center gap-1 md:hidden">
+        <button onclick="toggleDarkMode()" class="p-1.5 rounded-full text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all" aria-label="Cambiar Tema">
+          <svg id="theme-toggle-dark-icon-mobile" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+          <svg id="theme-toggle-light-icon-mobile" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        </button>
+
+        <button onclick="toggleMobileMenu()" class="p-1.5 rounded-md text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none" aria-label="Abrir Menú">
+          <svg id="menu-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="menu-icon-close" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Dropdown Menú Móvil -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-4 pt-2 pb-5 space-y-2">
+      <button onclick="showSection('landing'); toggleMobileMenu()" class="block w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800">Inicio</button>
+      <button onclick="scrollToFeatures(); toggleMobileMenu()" class="block w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800">Servicios</button>
+      <button onclick="showSection('reserva'); toggleMobileMenu()" class="block w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-white dark:text-black bg-black dark:bg-white">Reservar Turno</button>
+      <button onclick="showSection('admin'); toggleMobileMenu()" class="block w-full text-left py-2 px-3 rounded-lg text-xs font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800">Ingreso Equipo</button>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="flex-grow">
+
+    <!-- ==================== SECCIÓN 1: LANDING PAGE ==================== -->
+    <div id="section-landing" class="space-y-16 sm:space-y-24 pb-20">
+      
+      <!-- Hero Section -->
+      <section class="pt-16 sm:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 text-center">
+        <div class="max-w-4xl mx-auto space-y-6">
+          
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-[11px] font-medium text-neutral-600 dark:text-neutral-400">
+            <span>Barbería Tradicional</span>
+            <span class="text-neutral-300 dark:text-neutral-700">•</span>
+            <span class="text-neutral-900 dark:text-white font-semibold">Reserva Digital</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-6xl font-semibold tracking-tight text-black dark:text-white max-w-3xl mx-auto leading-[1.08]">
+            Tu corte de cabello.<br class="hidden sm:block" /> Agendado con precisión.
+          </h1>
+
+          <p class="text-base sm:text-lg text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto font-normal leading-relaxed">
+            Selecciona tu barbero, elige el horario disponible y confirma tu turno de forma instantánea. Sin esperas.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button onclick="showSection('reserva')" class="w-full sm:w-auto px-6 py-2.5 rounded-full text-xs font-medium bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-95 transition-all min-h-[40px]">
+              Reservar Turno
+            </button>
+            <button onclick="showSection('admin')" class="w-full sm:w-auto px-6 py-2.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-800 transition-all min-h-[40px]">
+              Portal Barberos
+            </button>
+          </div>
+
+          <!-- Métricas -->
+          <div class="pt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto border-t border-neutral-100 dark:border-neutral-900 text-center">
+            <div>
+              <p class="text-2xl font-semibold text-black dark:text-white tracking-tight">100%</p>
+              <p class="text-xs text-neutral-400 dark:text-neutral-500 font-normal">Sin Filas</p>
+            </div>
+            <div>
+              <p class="text-2xl font-semibold text-black dark:text-white tracking-tight">45 min</p>
+              <p class="text-xs text-neutral-400 dark:text-neutral-500 font-normal">Atención Detallada</p>
+            </div>
+            <div>
+              <p class="text-2xl font-semibold text-black dark:text-white tracking-tight">24/7</p>
+              <p class="text-xs text-neutral-400 dark:text-neutral-500 font-normal">Agenda Disponible</p>
+            </div>
+            <div>
+              <p class="text-2xl font-semibold text-black dark:text-white tracking-tight">2 Sillas</p>
+              <p class="text-xs text-neutral-400 dark:text-neutral-500 font-normal">Atención Personal</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Servicios Destacados con Imágenes -->
+      <section id="caracteristicas" class="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
+        <div class="text-center space-y-1">
+          <p class="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Servicios</p>
+          <h2 class="text-2xl sm:text-3xl font-semibold text-black dark:text-white tracking-tight">Especialidades del local</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Card Servicio 1 -->
+          <div class="bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-800 overflow-hidden transition-all hover:border-neutral-300 dark:hover:border-neutral-700 flex flex-col justify-between">
+            <div class="h-44 overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+              <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=600&auto=format&fit=crop" alt="Corte de Cabello" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
+            </div>
+            <div class="p-5 space-y-2">
+              <h3 class="font-semibold text-base text-black dark:text-white tracking-tight">Corte de Cabello</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
+                Asesoría de estilo, lavatorio con productos seleccionados y acabado técnico según la estructura de tu cabello.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card Servicio 2 -->
+          <div class="bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-800 overflow-hidden transition-all hover:border-neutral-300 dark:hover:border-neutral-700 flex flex-col justify-between">
+            <div class="h-44 overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+              <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=600&auto=format&fit=crop" alt="Perfilado de Barba" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
+            </div>
+            <div class="p-5 space-y-2">
+              <h3 class="font-semibold text-base text-black dark:text-white tracking-tight">Perfilado de Barba</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
+                Perfilado exacto, ritual de toalla caliente y tratamiento hidratante con aceites esenciales para la piel.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card Servicio 3 -->
+          <div class="bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200/60 dark:border-neutral-800 overflow-hidden transition-all hover:border-neutral-300 dark:hover:border-neutral-700 flex flex-col justify-between">
+            <div class="h-44 overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+              <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=600&auto=format&fit=crop" alt="Servicio Completo" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
+            </div>
+            <div class="p-5 space-y-2">
+              <h3 class="font-semibold text-base text-black dark:text-white tracking-tight">Servicio Completo</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed font-normal">
+                Corte + barba sincronizados en un único turno de 45 minutos. Máxima atención al detalle.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Sección Nuestro Equipo / Barberos -->
+      <section class="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
+        <div class="text-center space-y-1">
+          <p class="text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500">Equipo</p>
+          <h2 class="text-2xl sm:text-3xl font-semibold text-black dark:text-white tracking-tight">Nuestros Barberos</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+          <!-- Barbero 1 -->
+          <div class="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 flex items-center gap-4">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" alt="Carlos Mendoza" class="w-16 h-16 rounded-full object-cover grayscale border border-neutral-300 dark:border-neutral-700">
+            <div>
+              <h3 class="font-semibold text-sm text-black dark:text-white tracking-tight">Carlos Mendoza</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400">Especialista en Cortes Clásicos</p>
+              <span class="inline-block mt-1 text-[10px] font-medium text-neutral-400 dark:text-neutral-400 bg-white dark:bg-neutral-800 px-2 py-0.5 rounded-full border border-neutral-200 dark:border-neutral-700">8 años exp.</span>
+            </div>
+          </div>
+
+          <!-- Barbero 2 -->
+          <div class="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800 flex items-center gap-4">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="David Ruiz" class="w-16 h-16 rounded-full object-cover grayscale border border-neutral-300 dark:border-neutral-700">
+            <div>
+              <h3 class="font-semibold text-sm text-black dark:text-white tracking-tight">David Ruiz</h3>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400">Especialista en Degradados & Barba</p>
+              <span class="inline-block mt-1 text-[10px] font-medium text-neutral-400 dark:text-neutral-400 bg-white dark:bg-neutral-800 px-2 py-0.5 rounded-full border border-neutral-200 dark:border-neutral-700">6 años exp.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Banner CTA -->
+      <section class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="bg-neutral-900 dark:bg-neutral-900 border border-transparent dark:border-neutral-800 text-white rounded-3xl p-8 sm:p-12 text-center space-y-4">
+          <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight">Asegura tu lugar en la agenda</h2>
+          <p class="text-neutral-400 text-xs sm:text-sm max-w-md mx-auto font-normal">
+            Selecciona el horario que mejor coincida con tu rutina diaria.
+          </p>
+          <div class="pt-2">
+            <button onclick="showSection('reserva')" class="px-6 py-2.5 rounded-full text-xs font-medium bg-white text-black hover:bg-neutral-100 transition-all min-h-[38px]">
+              Agendar Ahora
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==================== SECCIÓN 2: FORMULARIO DE RESERVA ==================== -->
+    <section id="section-reserva" class="hidden max-w-xl mx-auto px-4 sm:px-6 py-12 space-y-6">
+      <div class="text-center space-y-1">
+        <h1 class="text-2xl sm:text-3xl font-semibold text-black dark:text-white tracking-tight">Reserva de Turno</h1>
+        <p class="text-neutral-500 dark:text-neutral-400 text-xs sm:text-sm font-normal">Selecciona los parámetros de tu cita.</p>
+      </div>
+
+      <form id="form-reserva" onsubmit="crearReserva(event)" class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+        
+        <!-- Paso 1: Servicios -->
+        <div class="space-y-2">
+          <label class="block text-xs font-medium text-neutral-500 dark:text-neutral-400">1. Selecciona el servicio</label>
+          <div id="servicios-container" class="grid grid-cols-1 gap-2.5">
+            <div class="p-3.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800 animate-pulse text-xs text-neutral-400">Cargando opciones...</div>
+          </div>
+        </div>
+
+        <!-- Paso 2: Barbero con Avatar Visual -->
+        <div class="space-y-2">
+          <label class="block text-xs font-medium text-neutral-500 dark:text-neutral-400">2. Barbero de preferencia</label>
+          <div id="barberos-reserva-container" class="grid grid-cols-2 gap-3">
+            <!-- Renderizado dinámico vía JS -->
+          </div>
+        </div>
+
+        <!-- Paso 3: Fecha y Hora -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-neutral-500 dark:text-neutral-400">3. Fecha</label>
+            <input type="date" id="input-fecha" required class="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3.5 py-2.5 text-xs text-neutral-800 dark:text-neutral-100 focus:outline-none focus:border-black dark:focus:border-white transition min-h-[42px]">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-neutral-500 dark:text-neutral-400">4. Hora</label>
+            <input type="time" id="input-hora" required class="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3.5 py-2.5 text-xs text-neutral-800 dark:text-neutral-100 focus:outline-none focus:border-black dark:focus:border-white transition min-h-[42px]">
+          </div>
+        </div>
+
+        <!-- Paso 4: Notas -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-neutral-500 dark:text-neutral-400">Notas de preferencia (Opcional)</label>
+          <input type="text" id="input-notas" placeholder="Ej. Afeitado con navaja, degradado bajo..." class="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3.5 py-2.5 text-xs text-neutral-800 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:border-black dark:focus:border-white transition min-h-[42px]">
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl font-medium text-xs bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-95 transition-all min-h-[44px]">
+          Confirmar Reserva
+        </button>
+      </form>
+
+      <div id="mensaje-notificacion" class="hidden p-3.5 rounded-xl text-xs text-center border font-medium transition-all"></div>
+    </section>
+
+    <!-- ==================== SECCIÓN 3: PORTAL BARBEROS / ADMIN ==================== -->
+    <section id="section-admin" class="hidden max-w-4xl mx-auto px-4 sm:px-6 py-12 space-y-6">
+      
+      <!-- Login Card -->
+      <div id="login-card" class="max-w-sm mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm space-y-5">
+        <div class="text-center space-y-1">
+          <h2 class="text-lg font-semibold text-black dark:text-white tracking-tight">Acceso Interno</h2>
+          <p class="text-xs text-neutral-400 font-normal">Panel de control de barberos</p>
+        </div>
+
+        <form onsubmit="loginBarbero(event)" class="space-y-3.5">
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Usuario</label>
+            <input type="text" id="login-usuario" required placeholder="carlos.mendoza" class="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3.5 py-2.5 text-xs text-neutral-800 dark:text-neutral-100 focus:outline-none focus:border-black dark:focus:border-white transition min-h-[42px]">
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-neutral-600 dark:text-neutral-400">Contraseña</label>
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl px-3.5 py-2.5 text-xs text-neutral-800 dark:text-neutral-100 focus:outline-none focus:border-black dark:focus:border-white transition min-h-[42px]">
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-xl font-medium text-xs bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all min-h-[42px]">
+            Iniciar Sesión
+          </button>
+        </form>
+        <div id="login-error" class="hidden p-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs text-center font-medium border border-neutral-200 dark:border-neutral-700"></div>
+      </div>
+
+      <!-- Dashboard Barbero -->
+      <div id="dashboard-card" class="hidden space-y-5">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-neutral-50 dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
+          <div>
+            <h2 class="text-base font-semibold text-black dark:text-white tracking-tight">Panel de Agenda</h2>
+            <p id="barbero-bienvenida" class="text-xs text-neutral-500 dark:text-neutral-400 font-normal">Sesión activa</p>
+          </div>
+          <button onclick="logoutBarbero()" class="w-full sm:w-auto px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-white dark:hover:bg-neutral-800 transition min-h-[34px]">
+            Cerrar Sesión
+          </button>
+        </div>
+
+        <!-- Tabla Citas -->
+        <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm">
+          <div class="p-3.5 border-b border-neutral-200/80 dark:border-neutral-800 flex justify-between items-center bg-neutral-50/50 dark:bg-neutral-800/30">
+            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400">Citas Programadas</span>
+            <button onclick="cargarCitasDashboard()" class="text-xs font-medium text-black dark:text-white hover:underline">Actualizar ↻</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs min-w-[600px]">
+              <thead class="bg-neutral-50 dark:bg-neutral-800/50 text-neutral-400 dark:text-neutral-500 border-b border-neutral-200 dark:border-neutral-800 font-medium">
+                <tr>
+                  <th class="p-3.5 font-medium">ID</th>
+                  <th class="p-3.5 font-medium">Cliente</th>
+                  <th class="p-3.5 font-medium">Servicio</th>
+                  <th class="p-3.5 font-medium">Barbero</th>
+                  <th class="p-3.5 font-medium">Fecha/Hora</th>
+                  <th class="p-3.5 font-medium">Estado</th>
+                  <th class="p-3.5 font-medium text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-citas-body" class="divide-y divide-neutral-100 dark:divide-neutral-800 text-neutral-800 dark:text-neutral-200">
+                <tr>
+                  <td colspan="7" class="p-6 text-center text-neutral-400 font-normal">Cargando agenda...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-950 py-6 text-center text-xs text-neutral-400 dark:text-neutral-500 font-normal px-4">
+    © 2026 Barbería & Co. Todos los derechos reservados.
+  </footer>
+
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    const API_URL = 'http://localhost:3000';
+    let servicioSeleccionadoId = null;
+    let barberoSeleccionadoId = 1;
+
+    // Galería de imágenes estáticas para servicios
+    const imagenesServicios = {
+      1: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=300&auto=format&fit=crop',
+      2: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=300&auto=format&fit=crop',
+      3: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=300&auto=format&fit=crop'
+    };
+
+    // Datos estáticos de barberos con imagen
+    const barberosLista = [
+      { id: 1, nombre: 'Carlos Mendoza', rol: 'Cortes Clásicos', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop' },
+      { id: 2, nombre: 'David Ruiz', rol: 'Degradados & Barba', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop' }
+    ];
+
+    // Lógica para alternar Dark Mode
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      if (isDark) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+      }
+      actualizarIconosTema();
+    }
+
+    function actualizarIconosTema() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const darkIcon = document.getElementById('theme-toggle-dark-icon');
+      const lightIcon = document.getElementById('theme-toggle-light-icon');
+      const darkIconMobile = document.getElementById('theme-toggle-dark-icon-mobile');
+      const lightIconMobile = document.getElementById('theme-toggle-light-icon-mobile');
+
+      if (isDark) {
+        darkIcon.classList.add('hidden');
+        lightIcon.classList.remove('hidden');
+        if (darkIconMobile) darkIconMobile.classList.add('hidden');
+        if (lightIconMobile) lightIconMobile.classList.remove('hidden');
+      } else {
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+        if (lightIconMobile) lightIconMobile.classList.add('hidden');
+        if (darkIconMobile) darkIconMobile.classList.remove('hidden');
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('menu-icon-open');
+      const closeIcon = document.getElementById('menu-icon-close');
+      
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        openIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        openIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    }
+
+    function scrollToFeatures() {
+      showSection('landing');
+      setTimeout(() => {
+        document.getElementById('caracteristicas').scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+
+    function showSection(section) {
+      document.getElementById('section-landing').classList.add('hidden');
+      document.getElementById('section-reserva').classList.add('hidden');
+      document.getElementById('section-admin').classList.add('hidden');
+
+      if (section === 'landing') {
+        document.getElementById('section-landing').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (section === 'reserva') {
+        document.getElementById('section-reserva').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (section === 'admin') {
+        document.getElementById('section-admin').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    async function cargarServicios() {
+      try {
+        const res = await fetch(`${API_URL}/servicios`);
+        const servicios = await res.json();
+        const container = document.getElementById('servicios-container');
+        container.innerHTML = '';
+
+        servicios.forEach((s, idx) => {
+          const isFirst = idx === 0;
+          if (isFirst) servicioSeleccionadoId = s.id;
+
+          const imgUrl = imagenesServicios[s.id] || 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=300&auto=format&fit=crop';
+
+          const card = document.createElement('div');
+          card.className = `p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3.5 ${
+            isFirst 
+              ? 'bg-neutral-900 dark:bg-white border-black dark:border-white text-white dark:text-black' 
+              : 'bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 hover:border-neutral-300 dark:hover:border-neutral-700'
+          }`;
+          card.onclick = () => seleccionarServicio(s.id, card);
+
+          card.innerHTML = `
+            <img src="${imgUrl}" alt="${s.nombre}" class="w-12 h-12 rounded-lg object-cover grayscale flex-shrink-0">
+            <div class="flex-grow">
+              <h3 class="font-medium text-xs ${isFirst ? 'text-white dark:text-black' : 'text-black dark:text-white'}">${s.nombre}</h3>
+              <p class="text-[11px] ${isFirst ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-500 dark:text-neutral-400'} mt-0.5 font-normal">${s.descripcion || 'Servicio clásico'}</p>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <span class="font-semibold text-xs ${isFirst ? 'text-white dark:text-black' : 'text-black dark:text-white'}">$${s.precio}</span>
+              <span class="block text-[10px] ${isFirst ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-400 dark:text-neutral-500'}">${s.duracionMinutos}m</span>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error al cargar servicios:', err);
+      }
+    }
+
+    function seleccionarServicio(id, element) {
+      servicioSeleccionadoId = id;
+      const cards = document.querySelectorAll('#servicios-container > div');
+      cards.forEach(c => {
+        c.className = 'p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3.5 bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 hover:border-neutral-300 dark:hover:border-neutral-700';
+        const h3 = c.querySelector('h3');
+        const p = c.querySelector('p');
+        const span = c.querySelector('div.text-right > span');
+        if (h3) h3.className = 'font-medium text-xs text-black dark:text-white';
+        if (p) p.className = 'text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 font-normal';
+        if (span) span.className = 'font-semibold text-xs text-black dark:text-white';
+      });
+
+      element.className = 'p-3.5 rounded-xl border cursor-pointer transition-all flex items-center gap-3.5 bg-neutral-900 dark:bg-white border-black dark:border-white text-white dark:text-black';
+      const h3 = element.querySelector('h3');
+      const p = element.querySelector('p');
+      const span = element.querySelector('div.text-right > span');
+      if (h3) h3.className = 'font-medium text-xs text-white dark:text-black';
+      if (p) p.className = 'text-[11px] text-neutral-400 dark:text-neutral-600 mt-0.5 font-normal';
+      if (span) span.className = 'font-semibold text-xs text-white dark:text-black';
+    }
+
+    function cargarBarberos() {
+      const container = document.getElementById('barberos-reserva-container');
+      container.innerHTML = '';
+
+      barberosLista.forEach((b, idx) => {
+        const isFirst = idx === 0;
+        if (isFirst) barberoSeleccionadoId = b.id;
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
+          isFirst
+            ? 'bg-neutral-900 dark:bg-white border-black dark:border-white text-white dark:text-black'
+            : 'bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 hover:border-neutral-300 dark:hover:border-neutral-700'
+        }`;
+        card.onclick = () => seleccionarBarbero(b.id, card);
+
+        card.innerHTML = `
+          <img src="${b.img}" alt="${b.nombre}" class="w-10 h-10 rounded-full object-cover grayscale flex-shrink-0">
+          <div>
+            <h4 class="font-medium text-xs ${isFirst ? 'text-white dark:text-black' : 'text-black dark:text-white'}">${b.nombre}</h4>
+            <p class="text-[10px] ${isFirst ? 'text-neutral-400 dark:text-neutral-600' : 'text-neutral-500 dark:text-neutral-400'} font-normal">${b.rol}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function seleccionarBarbero(id, element) {
+      barberoSeleccionadoId = id;
+      const cards = document.querySelectorAll('#barberos-reserva-container > div');
+      cards.forEach(c => {
+        c.className = 'p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200/80 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 hover:border-neutral-300 dark:hover:border-neutral-700';
+        const h4 = c.querySelector('h4');
+        const p = c.querySelector('p');
+        if (h4) h4.className = 'font-medium text-xs text-black dark:text-white';
+        if (p) p.className = 'text-[10px] text-neutral-500 dark:text-neutral-400 font-normal';
+      });
+
+      element.className = 'p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 bg-neutral-900 dark:bg-white border-black dark:border-white text-white dark:text-black';
+      const h4 = element.querySelector('h4');
+      const p = element.querySelector('p');
+      if (h4) h4.className = 'font-medium text-xs text-white dark:text-black';
+      if (p) p.className = 'text-[10px] text-neutral-400 dark:text-neutral-600 font-normal';
+    }
+
+    async function crearReserva(e) {
+      e.preventDefault();
+      const fecha = document.getElementById('input-fecha').value;
+      const hora = document.getElementById('input-hora').value;
+      const notas = document.getElementById('input-notas').value;
+
+      if (!servicioSeleccionadoId || !barberoSeleccionadoId || !fecha || !hora) {
+        mostrarNotificacion('Completa los datos obligatorios.', 'error');
+        return;
+      }
+
+      const fechaHoraUTC = new Date(`${fecha}T${hora}:00Z`).toISOString();
+
+      try {
+        const res = await fetch(`${API_URL}/citas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clienteId: 1,
+            barberoId: parseInt(barberoSeleccionadoId),
+            servicioId: parseInt(servicioSeleccionadoId),
+            fechaHoraUTC,
+            notas
+          })
+        });
+
+        if (res.ok) {
+          mostrarNotificacion('Cita agendada correctamente.', 'éxito');
+          document.getElementById('form-reserva').reset();
+          cargarServicios();
+          cargarBarberos();
+        } else {
+          const errData = await res.json();
+          mostrarNotificacion(errData.message || 'Error al agendar la cita.', 'error');
+        }
+      } catch (err) {
+        mostrarNotificacion('Error de conexión.', 'error');
+      }
+    }
+
+    function mostrarNotificacion(texto, tipo) {
+      const msg = document.getElementById('mensaje-notificacion');
+      msg.classList.remove('hidden', 'bg-black', 'dark:bg-white', 'text-white', 'dark:text-black', 'bg-neutral-100', 'dark:bg-neutral-800', 'text-neutral-800', 'dark:text-neutral-200', 'border-neutral-200', 'dark:border-neutral-700');
+      
+      if (tipo === 'éxito') {
+        msg.classList.add('bg-black', 'dark:bg-white', 'text-white', 'dark:text-black');
+      } else {
+        msg.classList.add('bg-neutral-100', 'dark:bg-neutral-800', 'text-neutral-800', 'dark:text-neutral-200', 'border', 'border-neutral-200', 'dark:border-neutral-700');
+      }
+      msg.innerText = texto;
+    }
+
+    async function loginBarbero(e) {
+      e.preventDefault();
+      const usuario = document.getElementById('login-usuario').value;
+      const passwordPlain = document.getElementById('login-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      try {
+        const res = await fetch(`${API_URL}/barberos/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario, passwordPlain })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('login-card').classList.add('hidden');
+          document.getElementById('dashboard-card').classList.remove('hidden');
+          document.getElementById('barbero-bienvenida').innerText = `Barbero: ${data.nombre} (${data.especialidad})`;
+          cargarCitasDashboard();
+        } else {
+          errorDiv.innerText = 'Credenciales no válidas';
+          errorDiv.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Error al comunicarse con la API';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function logoutBarbero() {
+      document.getElementById('dashboard-card').classList.add('hidden');
+      document.getElementById('login-card').classList.remove('hidden');
+    }
+
+    async function cargarCitasDashboard() {
+      const tbody = document.getElementById('tabla-citas-body');
+      try {
+        const res = await fetch(`${API_URL}/citas`);
+        const citas = await res.json();
+        tbody.innerHTML = '';
+
+        if (!citas || citas.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-neutral-400 font-normal">Sin citas agendadas.</td></tr>`;
+          return;
+        }
+
+        citas.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition';
+          const fechaFormateada = new Date(c.fechaHoraUTC).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+
+          tr.innerHTML = `
+            <td class="p-3.5 font-mono text-neutral-400 dark:text-neutral-500">#${c.id}</td>
+            <td class="p-3.5 font-medium text-black dark:text-white">${c.cliente ? c.cliente.nombre : 'Cliente #' + c.clienteId}</td>
+            <td class="p-3.5 text-neutral-600 dark:text-neutral-400">${c.servicio ? c.servicio.nombre : 'Servicio #' + c.servicioId}</td>
+            <td class="p-3.5 text-neutral-600 dark:text-neutral-400">${c.barbero ? c.barbero.nombre : 'Barbero #' + c.barberoId}</td>
+            <td class="p-3.5 font-mono text-neutral-900 dark:text-neutral-200">${fechaFormateada}</td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-medium tracking-tight ${
+                c.estado === 'PENDIENTE' ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700' : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
+              }">${c.estado}</span>
+            </td>
+            <td class="p-3.5 text-right">
+              ${c.estado === 'PENDIENTE' ? `<button onclick="cancelarCita(${c.id})" class="px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition">Cancelar</button>` : '-'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-neutral-500 font-normal">Error al cargar la agenda.</td></tr>`;
+      }
+    }
+
+    async function cancelarCita(id) {
+      if (!confirm('¿Deseas cancelar esta cita?')) return;
+      try {
+        const res = await fetch(`${API_URL}/citas/${id}/cancelar`, { method: 'PATCH' });
+        if (res.ok) cargarCitasDashboard();
+      } catch (err) {
+        alert('No se pudo cancelar la cita.');
+      }
+    }
+
+    window.onload = () => {
+      actualizarIconosTema();
+      cargarServicios();
+      cargarBarberos();
+    };
+  </script>
+</body>
+</html>

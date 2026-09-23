@@ -1,27 +1,39 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { BarberosService } from '../Services/barberos.service';
+import { Barbero } from '../Entities/barbero.entity';
 
 @Controller('barberos')
 export class BarberosController {
   constructor(private readonly barberosService: BarberosService) {}
 
-  @Post()
-  create(@Body() createBarberoDto: { nombre: string; especialidad: string; pin: string; estado?: string }) {
-    return this.barberosService.create(createBarberoDto);
-  }
-
   @Get()
-  findAll() {
+  findAll(): Promise<Barbero[]> {
     return this.barberosService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<Barbero> {
     return this.barberosService.findOne(+id);
   }
 
-  @Patch(':id/estado')
-  updateEstado(@Param('id') id: string, @Body('estado') estado: string) {
-    return this.barberosService.updateEstado(+id, estado);
+  @Post('registro')
+  create(
+    @Body()
+    body: {
+      nombre: string;
+      usuario: string;
+      passwordPlain: string;
+      especialidad: string;
+      fotoUrl?: string;
+    },
+  ): Promise<Barbero> {
+    return this.barberosService.create(body);
+  }
+
+  @Post('login')
+  login(
+    @Body() body: { usuario: string; passwordPlain: string },
+  ): Promise<Barbero> {
+    return this.barberosService.login(body.usuario, body.passwordPlain);
   }
 }
